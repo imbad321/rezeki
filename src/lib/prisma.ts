@@ -1,25 +1,20 @@
 import { PrismaClient } from "@/generated/prisma/client"
 
-function createPrismaClient() {
-  const provider = process.env.DATABASE_PROVIDER ?? "sqlite"
-
-  if (provider === "sqlite") {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3")
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const path = require("path")
-    const adapter = new PrismaBetterSqlite3({ url: path.resolve(process.cwd(), "dev.db") })
-    return new PrismaClient({ adapter })
-  }
-
+function createPrismaClient(): PrismaClient {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaPg } = require("@prisma/adapter-pg")
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
   return new PrismaClient({ adapter })
 }
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined }
 
-export const db = globalForPrisma.prisma ?? createPrismaClient()
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db
+// Lazy proxy — client is created on first access, not at module load (avoids build-time DB calls)
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_, prop) {
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = createPrismaClient()
+    }
+    return Reflect.get(globalForPrisma.prisma as object, prop as string)
+  },
+})
