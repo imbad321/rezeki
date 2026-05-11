@@ -4,15 +4,36 @@ import {
   Users,
   BarChart3,
   ArrowLeftRight,
+  Upload,
+  Building2,
 } from "lucide-react"
 
-export const NAV_ITEMS = [
-  { label: "Dashboard",    href: "/dashboard",    icon: LayoutDashboard },
-  { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
-  { label: "Budget",       href: "/budget",       icon: BarChart3 },
-  { label: "Investors",    href: "/investors",    icon: Users },
-  { label: "Documents",    href: "/documents",    icon: FolderLock },
+export const NAV_SECTIONS = [
+  {
+    label: "Finance",
+    items: [
+      { label: "Dashboard",    href: "/dashboard",    icon: LayoutDashboard },
+      { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
+      { label: "Budget",       href: "/budget",       icon: BarChart3 },
+      { label: "Import",       href: "/import",       icon: Upload },
+    ],
+  },
+  {
+    label: "Portfolio",
+    items: [
+      { label: "Clients",   href: "/clients",   icon: Building2 },
+      { label: "Investors", href: "/investors", icon: Users },
+    ],
+  },
+  {
+    label: "Docs",
+    items: [
+      { label: "Documents", href: "/documents", icon: FolderLock },
+    ],
+  },
 ] as const
+
+export const NAV_ITEMS = NAV_SECTIONS.flatMap((s) => s.items)
 
 export const DOCUMENT_CATEGORIES = [
   { value: "ALL",              label: "All Files" },
@@ -71,3 +92,13 @@ export const TRANSACTION_CATEGORIES = [
   "Office & Admin",
   "Legal & Compliance",
 ] as const
+
+export const CLIENT_PRESET_COLORS = [
+  "#6366f1", "#8b5cf6", "#ec4899", "#ef4444", "#f97316",
+  "#f59e0b", "#10b981", "#14b8a6", "#06b6d4", "#3b82f6",
+  "#a78bfa", "#fb7185",
+]
+
+export const CLIENT_STAGES = [
+  "Pre-Seed", "Seed", "Series A", "Series B", "Series C", "Growth", "Profitable",
+]

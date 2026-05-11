@@ -1,11 +1,15 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Plus_Jakarta_Sans } from "next/font/google"
 import "./globals.css"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { TopBar } from "@/components/layout/TopBar"
 import { ClientProvider } from "@/lib/client-context"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["300", "400", "500", "600", "700", "800"],
+})
 
 export const metadata: Metadata = {
   title: "Rezeki Holdings Group",
@@ -14,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased dark`}>
+    <html lang="en" className={`${sans.variable} h-full antialiased dark`}>
       <body className="min-h-full flex bg-[#080c14]">
         <ClientProvider>
           <Sidebar />

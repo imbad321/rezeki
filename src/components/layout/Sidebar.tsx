@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { NAV_ITEMS } from "@/lib/constants"
+import { NAV_SECTIONS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { useClient, type ClientOption } from "@/lib/client-context"
 import { ChevronDown, Check, Landmark } from "lucide-react"
@@ -46,7 +46,7 @@ function ClientSelector() {
       </button>
 
       {open && (
-        <div className="absolute left-3 right-3 top-full mt-1 z-50 rounded-xl border border-[var(--border-strong)] bg-[#111827] shadow-2xl overflow-hidden animate-fade-up">
+        <div className="absolute left-3 right-3 top-full mt-1 z-50 rounded-xl border border-[var(--border-strong)] bg-[#111827] shadow-2xl overflow-hidden animate-scale-in">
           {clients.map((c) => (
             <button
               key={c.id}
@@ -94,31 +94,37 @@ export function Sidebar() {
       <ClientSelector />
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5">
-        <div className="px-2 mb-3 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-600">
-          Finance
-        </div>
-        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(href + "/")
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
-                active
-                  ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)]"
-                  : "text-[var(--sidebar-foreground)] hover:text-slate-200 hover:bg-white/5"
-              )}
-            >
-              <Icon size={15} className={cn("shrink-0", active && "text-[var(--primary)]")} />
-              {label}
-              {active && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse-dot" />
-              )}
-            </Link>
-          )
-        })}
+      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+        {NAV_SECTIONS.map((section) => (
+          <div key={section.label}>
+            <div className="px-2 mb-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-600">
+              {section.label}
+            </div>
+            <div className="space-y-0.5">
+              {section.items.map(({ label, href, icon: Icon }) => {
+                const active = pathname === href || pathname.startsWith(href + "/")
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
+                      active
+                        ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)]"
+                        : "text-[var(--sidebar-foreground)] hover:text-slate-200 hover:bg-white/5"
+                    )}
+                  >
+                    <Icon size={15} className={cn("shrink-0", active && "text-[var(--primary)]")} />
+                    {label}
+                    {active && (
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse-dot" />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Footer */}

@@ -6,7 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
   --color-border: var(--border);
   --color-card: var(--card);
@@ -46,7 +46,7 @@
   --border:            rgba(255,255,255,0.07);
   --border-strong:     rgba(255,255,255,0.12);
   --input:             rgba(255,255,255,0.06);
-  --ring:              rgba(99,102,241,0.5);
+  --ring:              rgba(16,185,129,0.4);
 
   /* Accents — Rezeki brand emerald */
   --primary:           #10b981;
@@ -75,6 +75,11 @@
   --sidebar-foreground:#94a3b8;
   --sidebar-active-bg: rgba(16,185,129,0.13);
   --sidebar-active-fg: #6ee7b7;
+
+  /* Animation easing */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer base {
@@ -91,15 +96,16 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
   }
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 }
 
 /* ── Glassmorphism card ──────────────────────────────────────────────────── */
@@ -109,19 +115,39 @@
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
+  transition: border-color 200ms ease;
 }
 
 .glass-solid {
   background: var(--card-solid);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
+  transition: border-color 200ms ease;
+}
+
+/* ── Interactive lift ────────────────────────────────────────────────────── */
+.interactive {
+  transition:
+    transform 220ms var(--ease-spring),
+    box-shadow 220ms ease,
+    border-color 200ms ease;
+  cursor: pointer;
+}
+.interactive:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  border-color: rgba(255,255,255,0.11);
+}
+.interactive:active {
+  transform: translateY(-1px) scale(1.002);
+  transition-duration: 80ms;
 }
 
 /* ── Glow effects ────────────────────────────────────────────────────────── */
 .glow-indigo { box-shadow: 0 0 24px rgba(16,185,129,0.18), 0 0 1px rgba(16,185,129,0.4); }
 .glow-green  { box-shadow: 0 0 24px rgba(34,211,165,0.14), 0 0 1px rgba(34,211,165,0.3); }
 .glow-gold   { box-shadow: 0 0 24px rgba(212,175,55,0.14), 0 0 1px rgba(212,175,55,0.3); }
-.glow-red    { box-shadow: 0 0 24px rgba(255,92,106,0.14),  0 0 1px rgba(255,92,106,0.3); }
+.glow-red    { box-shadow: 0 0 24px rgba(255,92,106,0.14), 0 0 1px rgba(255,92,106,0.3); }
 
 /* ── Gradient text ───────────────────────────────────────────────────────── */
 .gradient-text {
@@ -141,15 +167,23 @@
 /* ── Subtle grid background ──────────────────────────────────────────────── */
 .bg-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
 /* ── Animations ──────────────────────────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.93) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -159,21 +193,32 @@
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
 }
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.85); }
+@keyframes pulseDot {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
 }
 
-.animate-fade-up  { animation: fadeUp  0.4s ease both; }
-.animate-fade-in  { animation: fadeIn  0.3s ease both; }
-.animate-shimmer  {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+.animate-slide-up   { animation: slideUp   0.45s var(--ease-smooth) both; }
+.animate-scale-in   { animation: scaleIn   0.35s var(--ease-smooth) both; }
+.animate-slide-left { animation: slideInLeft 0.4s var(--ease-smooth) both; }
+.animate-fade-in    { animation: fadeIn    0.3s ease both; }
+/* backward compat alias */
+.animate-fade-up    { animation: slideUp   0.45s var(--ease-smooth) both; }
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
   background-size: 200% 100%;
-  animation: shimmer 2s linear infinite;
+  animation: shimmer 1.8s linear infinite;
 }
-.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+.animate-pulse-dot { animation: pulseDot 2.2s ease-in-out infinite; }
+.animate-float     { animation: float    4s ease-in-out infinite; }
 
 /* ── Stagger delays ──────────────────────────────────────────────────────── */
+.delay-50  { animation-delay: 0.05s; }
 .delay-100 { animation-delay: 0.1s; }
 .delay-150 { animation-delay: 0.15s; }
 .delay-200 { animation-delay: 0.2s; }
@@ -182,4 +227,7 @@
 .delay-400 { animation-delay: 0.4s; }
 
 /* ── Number ticker font ──────────────────────────────────────────────────── */
-.tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
