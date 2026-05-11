@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation"
 import { NAV_ITEMS } from "@/lib/constants"
 import { useClient } from "@/lib/client-context"
-import { Download, LogOut } from "lucide-react"
+import { Download, LogOut, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useSession, signOut } from "next-auth/react"
 
@@ -47,6 +47,14 @@ export function TopBar() {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
+        <button
+          onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }))}
+          className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-[var(--border)] text-xs text-slate-500 hover:text-slate-300 hover:bg-white/8 transition-colors"
+        >
+          <Search size={11} />
+          <span>Search</span>
+          <kbd className="ml-1 font-mono text-[10px] px-1 rounded border border-[var(--border)]">⌘K</kbd>
+        </button>
         {showExport && (
           <button
             id="topbar-export-btn"

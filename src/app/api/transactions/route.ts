@@ -1,6 +1,25 @@
 import { db } from "@/lib/prisma"
 import { auth } from "@/auth"
 
+export async function POST(req: Request) {
+  const session = await auth()
+  if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 })
+  if (session.user.role !== "ADMIN") return Response.json({ error: "Forbidden" }, { status: 403 })
+
+  try {
+    const { clientId, date, description, category, type, amount } = await req.json()
+    if (!clientId || !date || !description || !category || !type || amount == null)
+      return Response.json({ error: "Missing required fields" }, { status: 400 })
+
+    const tx = await db.transaction.create({
+      data: { clientId, date: new Date(date), description, category, type, amount: parseFloat(amount) },
+    })
+    return Response.json(tx, { status: 201 })
+  } catch {
+    return Response.json({ error: "Failed to create" }, { status: 500 })
+  }
+}
+
 export async function GET(req: Request) {
   const session = await auth()
   if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 })

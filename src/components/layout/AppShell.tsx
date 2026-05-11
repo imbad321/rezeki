@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import { Sidebar } from "./Sidebar"
 import { TopBar } from "./TopBar"
+import { CommandPalette } from "@/components/CommandPalette"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -11,6 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <CommandPalette />
       <Sidebar />
       <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
         <TopBar />

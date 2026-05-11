@@ -7,6 +7,8 @@ import {
   ArrowLeftRight,
   Upload,
   Building2,
+  Clock,
+  FileText,
 } from "lucide-react"
 
 export const NAV_SECTIONS = [
@@ -17,6 +19,8 @@ export const NAV_SECTIONS = [
       { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
       { label: "Budget",       href: "/budget",       icon: BarChart3 },
       { label: "Metrics",      href: "/metrics",      icon: BarChart2 },
+      { label: "Runway",       href: "/runway",       icon: Clock },
+      { label: "Reports",      href: "/reports",      icon: FileText },
       { label: "Import",       href: "/import",       icon: Upload },
     ],
   },
