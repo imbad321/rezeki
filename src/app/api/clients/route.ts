@@ -1,9 +1,25 @@
 import { db } from "@/lib/prisma"
+import { auth } from "@/auth"
 import { NextRequest } from "next/server"
 
 export async function GET(req: NextRequest) {
+  const session = await auth()
+  if (!session?.user) return Response.json({ error: "Unauthorized" }, { status: 401 })
+
   try {
     const counts = req.nextUrl.searchParams.get("counts") === "1"
+
+    if (session.user.role === "CLIENT") {
+      const client = await db.client.findUnique({
+        where: { id: session.user.clientId ?? "" },
+        select: {
+          id: true, name: true, industry: true, stage: true, color: true,
+          ...(counts ? { _count: { select: { transactions: true } } } : {}),
+        },
+      })
+      return Response.json(client ? [client] : [])
+    }
+
     const clients = await db.client.findMany({
       orderBy: { createdAt: "asc" },
       select: {
@@ -18,6 +34,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth()
+  if (!session?.user || session.user.role !== "ADMIN")
+    return Response.json({ error: "Unauthorized" }, { status: 401 })
+
   try {
     const { name, industry, stage, color } = await req.json()
     if (!name?.trim()) return Response.json({ error: "Name required" }, { status: 400 })

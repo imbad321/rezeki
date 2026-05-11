@@ -6,7 +6,10 @@ import { useState } from "react"
 import { NAV_SECTIONS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { useClient, type ClientOption } from "@/lib/client-context"
-import { ChevronDown, Check, Landmark } from "lucide-react"
+import { ChevronDown, Check, Landmark, Plus } from "lucide-react"
+import { useSession } from "next-auth/react"
+
+const CLIENT_HIDDEN_HREFS = new Set(["/import", "/clients", "/investors"])
 
 function ClientBadge({ color, name }: { color: string; name: string }) {
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
@@ -21,10 +24,30 @@ function ClientBadge({ color, name }: { color: string; name: string }) {
 }
 
 function ClientSelector() {
-  const { clients, selected, setSelected } = useClient()
+  const { clients, selected, setSelected, isLoading } = useClient()
   const [open, setOpen] = useState(false)
 
-  if (!selected) return null
+  if (isLoading) {
+    return (
+      <div className="px-3 py-3 border-b border-[var(--sidebar-border)]">
+        <div className="h-10 rounded-xl bg-white/5 animate-shimmer" />
+      </div>
+    )
+  }
+
+  if (!selected) {
+    return (
+      <div className="px-3 py-3 border-b border-[var(--sidebar-border)]">
+        <Link
+          href="/clients"
+          className="flex items-center gap-2 px-2.5 py-2 rounded-xl hover:bg-white/5 transition-colors text-slate-500 hover:text-slate-300"
+        >
+          <Plus size={13} />
+          <span className="text-xs font-medium">Add your first client</span>
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <div className="relative px-3 py-3 border-b border-[var(--sidebar-border)]">
@@ -69,6 +92,15 @@ function ClientSelector() {
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const isClient = session?.user?.role === "CLIENT"
+
+  const visibleSections = NAV_SECTIONS
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => !isClient || !CLIENT_HIDDEN_HREFS.has(item.href)),
+    }))
+    .filter((section) => section.items.length > 0)
 
   return (
     <aside className="flex flex-col w-64 min-h-screen shrink-0 border-r border-[var(--sidebar-border)]"
@@ -95,7 +127,7 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
-        {NAV_SECTIONS.map((section) => (
+        {visibleSections.map((section) => (
           <div key={section.label}>
             <div className="px-2 mb-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-600">
               {section.label}

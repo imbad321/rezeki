@@ -1,4 +1,5 @@
 import { db } from "@/lib/prisma"
+import { auth } from "@/auth"
 import { NextRequest } from "next/server"
 
 interface ImportRow {
@@ -10,6 +11,10 @@ interface ImportRow {
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth()
+  if (!session?.user || session.user.role !== "ADMIN")
+    return Response.json({ error: "Unauthorized" }, { status: 401 })
+
   try {
     const { clientId, transactions } = await req.json() as {
       clientId: string

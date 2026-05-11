@@ -35,9 +35,9 @@ function SummaryCard({ label, value, sub, positive }: { label: string; value: st
 }
 
 export default function TransactionsPage() {
-  const { selected } = useClient()
+  const { selected, isLoading: clientLoading } = useClient()
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("All")
   const [search, setSearch] = useState("")
 
@@ -50,7 +50,10 @@ export default function TransactionsPage() {
       .catch(() => setLoading(false))
   }, [selected])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    if (!selected) { setTransactions([]); return }
+    load()
+  }, [selected, load])
 
   useEffect(() => {
     const handler = () => {
@@ -88,6 +91,30 @@ export default function TransactionsPage() {
     "Payroll": "#ff5c6a",            "Infrastructure": "#fb923c",
     "Sales & Marketing": "#f472b6",  "R&D Tools": "#60a5fa",
     "Office & Admin": "#94a3b8",     "Legal & Compliance": "#fbbf24",
+  }
+
+  if (clientLoading) {
+    return (
+      <div className="space-y-6 max-w-7xl">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="glass h-24 animate-shimmer" />
+          ))}
+        </div>
+        <div className="glass h-96 animate-shimmer" />
+      </div>
+    )
+  }
+
+  if (!selected) {
+    return (
+      <div className="flex items-center justify-center h-80">
+        <div className="text-center">
+          <div className="text-slate-500 font-medium mb-1">No portfolio company selected</div>
+          <div className="text-slate-600 text-sm">Add a client from the Clients page to get started</div>
+        </div>
+      </div>
+    )
   }
 
   return (

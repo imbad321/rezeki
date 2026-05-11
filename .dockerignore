@@ -1,0 +1,20 @@
+.git
+.gitignore
+.next
+node_modules
+npm-debug.log*
+
+# local dev files
+dev.db
+dev.db-journal
+*.pem
+
+# env files — inject these as secrets at runtime, never bake into the image
+.env
+.env.*
+!.env.example
+
+# editor / OS
+.DS_Store
+.vscode
+*.tsbuildinfo

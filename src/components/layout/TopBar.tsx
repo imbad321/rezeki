@@ -3,8 +3,9 @@
 import { usePathname } from "next/navigation"
 import { NAV_ITEMS } from "@/lib/constants"
 import { useClient } from "@/lib/client-context"
-import { Download } from "lucide-react"
+import { Download, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useSession, signOut } from "next-auth/react"
 
 const PAGE_TITLES: Record<string, string> = Object.fromEntries(
   NAV_ITEMS.map(({ href, label }) => [href, label])
@@ -13,6 +14,7 @@ const PAGE_TITLES: Record<string, string> = Object.fromEntries(
 export function TopBar() {
   const pathname = usePathname()
   const { selected } = useClient()
+  const { data: session } = useSession()
 
   const title =
     Object.entries(PAGE_TITLES).find(([href]) =>
@@ -20,6 +22,8 @@ export function TopBar() {
     )?.[1] ?? "Rezeki Holdings Group"
 
   const showExport = pathname === "/dashboard" || pathname === "/transactions"
+  const user = session?.user
+  const initials = ((user?.name || user?.email || "?")[0] ?? "?").toUpperCase()
 
   return (
     <header className={cn(
@@ -42,7 +46,7 @@ export function TopBar() {
         )}
       </div>
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-3">
         {showExport && (
           <button
             id="topbar-export-btn"
@@ -60,13 +64,32 @@ export function TopBar() {
             Export Excel
           </button>
         )}
-        <span className="text-[10px] text-slate-600 font-medium hidden sm:block">FY 2025–26</span>
-        <div className={cn(
-          "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold",
-          "bg-[var(--accent)] text-[var(--accent-foreground)]"
-        )}>
-          CFO
-        </div>
+
+        {user && (
+          <div className="flex items-center gap-2">
+            <div className="text-right hidden sm:block">
+              <div className="text-xs font-medium text-slate-300 leading-tight">
+                {user.name || user.email}
+              </div>
+              <div className="text-[10px] text-slate-600 leading-tight">
+                {user.role === "ADMIN" ? "Administrator" : "Client View"}
+              </div>
+            </div>
+            <div className={cn(
+              "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold",
+              "bg-[var(--accent)] text-[var(--accent-foreground)]"
+            )}>
+              {initials}
+            </div>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-white transition-colors"
+              title="Sign out"
+            >
+              <LogOut size={13} />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   )

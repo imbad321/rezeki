@@ -32,7 +32,8 @@ export function ClientProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetch("/api/clients")
       .then((r) => r.json())
-      .then((data: ClientOption[]) => {
+      .then((raw) => {
+        const data: ClientOption[] = Array.isArray(raw) ? raw : []
         setClients(data)
         const stored = typeof window !== "undefined" ? localStorage.getItem("rezeki_client_id") : null
         const initial = stored ? data.find((c) => c.id === stored) ?? data[0] : data[0]

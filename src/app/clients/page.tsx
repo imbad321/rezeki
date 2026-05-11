@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useClient } from "@/lib/client-context"
 import { CLIENT_PRESET_COLORS, CLIENT_STAGES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-import { Plus, Pencil, Trash2, Building2, X } from "lucide-react"
+import { Plus, Pencil, Trash2, Building2, X, UserPlus } from "lucide-react"
 
 interface ClientFull {
   id: string
@@ -40,16 +40,25 @@ function ClientCard({
   client,
   onEdit,
   onDelete,
+  onCreateLogin,
 }: {
   client: ClientFull
   onEdit: () => void
   onDelete: () => void
+  onCreateLogin: () => void
 }) {
   return (
     <div className="glass p-5 flex flex-col gap-4 animate-slide-up interactive group">
       <div className="flex items-start justify-between gap-2">
         <Badge color={client.color} name={client.name} />
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-150 translate-y-1 group-hover:translate-y-0">
+          <button
+            onClick={onCreateLogin}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-[var(--primary)] transition-colors"
+            title="Create client login"
+          >
+            <UserPlus size={13} />
+          </button>
           <button
             onClick={onEdit}
             className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-slate-200 transition-colors"
@@ -95,7 +104,7 @@ function ClientCard({
   )
 }
 
-function Modal({
+function ClientModal({
   open,
   editing,
   onClose,
@@ -138,10 +147,7 @@ function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
-      <div
-        className="relative w-full max-w-md animate-scale-in"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative w-full max-w-md animate-scale-in" onClick={(e) => e.stopPropagation()}>
         <div className="glass-solid rounded-2xl p-6 shadow-2xl border border-[var(--border-strong)]">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-base font-semibold text-white">
@@ -237,11 +243,151 @@ function Modal({
   )
 }
 
+function CreateLoginModal({
+  open,
+  client,
+  onClose,
+}: {
+  open: boolean
+  client: ClientFull | null
+  onClose: () => void
+}) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [name, setName] = useState("")
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState("")
+  const [done, setDone] = useState(false)
+
+  useEffect(() => {
+    if (open) { setEmail(""); setPassword(""); setName(""); setError(""); setDone(false) }
+  }, [open])
+
+  if (!open || !client) return null
+
+  async function handleCreate() {
+    if (!email.trim() || !password) { setError("Email and password required"); return }
+    setSaving(true)
+    setError("")
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password, name: name.trim() || null, role: "CLIENT", clientId: client!.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? "Failed to create login"); return }
+      setDone(true)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+      <div className="relative w-full max-w-md animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="glass-solid rounded-2xl p-6 shadow-2xl border border-[var(--border-strong)]">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-base font-semibold text-white">Create Client Login</h2>
+              <p className="text-xs text-slate-500 mt-0.5">For {client.name}</p>
+            </div>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-white transition-colors">
+              <X size={15} />
+            </button>
+          </div>
+
+          {done ? (
+            <div className="space-y-4">
+              <div className="flex flex-col items-center gap-3 py-6 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--positive-dim)] flex items-center justify-center">
+                  <UserPlus size={20} className="text-[var(--positive)]" />
+                </div>
+                <div>
+                  <div className="text-white font-semibold mb-1">Login created</div>
+                  <div className="text-sm text-slate-500">
+                    <span className="font-mono text-slate-300">{email}</span> can now sign in and view {client.name}'s data.
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-white hover:opacity-90 transition-all"
+              >
+                Done
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-1.5">
+                  Display Name
+                </label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. John Smith"
+                  autoFocus
+                  className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-[var(--border)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-1.5">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="client@company.com"
+                  className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-[var(--border)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-1.5">
+                  Password *
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Temporary password"
+                  className="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-[var(--border)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[var(--primary)] transition-colors"
+                />
+              </div>
+
+              {error && <p className="text-xs text-[var(--negative)]">{error}</p>}
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={onClose}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreate}
+                  disabled={!email.trim() || !password || saving}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-[var(--primary)] text-white hover:opacity-90 disabled:opacity-40 transition-all"
+                >
+                  {saving ? "Creating…" : "Create Login"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ClientsPage() {
   const [clients, setClients] = useState<ClientFull[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<ClientFull | null>(null)
+  const [loginTarget, setLoginTarget] = useState<ClientFull | null>(null)
   const { setSelected } = useClient()
 
   const load = useCallback(() => {
@@ -359,17 +505,24 @@ export default function ClientsPage() {
                 client={c}
                 onEdit={() => openEdit(c)}
                 onDelete={() => handleDelete(c)}
+                onCreateLogin={() => setLoginTarget(c)}
               />
             </div>
           ))}
         </div>
       )}
 
-      <Modal
+      <ClientModal
         open={modalOpen}
         editing={editing}
         onClose={() => { setModalOpen(false); setEditing(null) }}
         onSave={handleSave}
+      />
+
+      <CreateLoginModal
+        open={loginTarget !== null}
+        client={loginTarget}
+        onClose={() => setLoginTarget(null)}
       />
     </div>
   )

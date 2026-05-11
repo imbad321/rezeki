@@ -39,9 +39,9 @@ function SkeletonCard() {
 }
 
 export default function DashboardPage() {
-  const { selected } = useClient()
+  const { selected, isLoading: clientLoading } = useClient()
   const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const load = useCallback(() => {
     if (!selected) return
@@ -52,7 +52,10 @@ export default function DashboardPage() {
       .catch(() => setLoading(false))
   }, [selected])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    if (!selected) { setData(null); return }
+    load()
+  }, [selected, load])
 
   useEffect(() => {
     const handler = () => {
@@ -68,7 +71,7 @@ export default function DashboardPage() {
 
   const runwayMo = data ? Math.floor(data.kpis.runway) : 0
 
-  if (loading || !data) {
+  if (clientLoading || loading || (selected && !data)) {
     return (
       <div className="space-y-6 max-w-7xl">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -82,7 +85,18 @@ export default function DashboardPage() {
     )
   }
 
-  const { kpis, mrrSeries, burnSeries, plSeries, incomeByCategory, expenseByCategory } = data
+  if (!selected) {
+    return (
+      <div className="flex items-center justify-center h-80">
+        <div className="text-center">
+          <div className="text-slate-500 font-medium mb-1">No portfolio company selected</div>
+          <div className="text-slate-600 text-sm">Add a client from the Clients page to get started</div>
+        </div>
+      </div>
+    )
+  }
+
+  const { kpis, mrrSeries, burnSeries, plSeries, incomeByCategory, expenseByCategory } = data!
 
   return (
     <div className="space-y-6 max-w-7xl">
