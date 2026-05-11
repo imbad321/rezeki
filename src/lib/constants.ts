@@ -33,7 +33,9 @@ export const NAV_SECTIONS = [
   },
 ] as const
 
-export const NAV_ITEMS = NAV_SECTIONS.flatMap((s) => s.items)
+export const NAV_ITEMS = NAV_SECTIONS.flatMap(
+  (s) => s.items as unknown as { label: string; href: string; icon: any }[]
+)
 
 export const DOCUMENT_CATEGORIES = [
   { value: "ALL",              label: "All Files" },

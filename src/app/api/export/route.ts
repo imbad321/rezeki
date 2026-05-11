@@ -1,7 +1,7 @@
-import ExcelJS from "exceljs"
+﻿import ExcelJS from "exceljs"
 import { db } from "@/lib/prisma"
 
-// ── Palette ──────────────────────────────────────────────────────────────────
+// â”€â”€ Palette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const C = {
   headerBg:     "FF0D1117",
   headerFg:     "FFF0F4FF",
@@ -88,7 +88,7 @@ function applyTitleBlock(ws: ExcelJS.Worksheet, title: string, subtitle: string,
   // Row 2: subtitle + client
   ws.mergeCells("A2:F2")
   const s = ws.getCell("A2")
-  s.value = `${title} — ${clientName}`
+  s.value = `${title} â€” ${clientName}`
   s.font = { bold: true, size: 12, color: { argb: C.headerFg }, name: "Calibri" }
   s.fill = { type: "pattern", pattern: "solid", fgColor: { argb: C.headerBg } }
   s.alignment = { vertical: "middle", horizontal: "left" }
@@ -97,7 +97,7 @@ function applyTitleBlock(ws: ExcelJS.Worksheet, title: string, subtitle: string,
   // Row 3: date + sheet description
   ws.mergeCells("A3:F3")
   const d = ws.getCell("A3")
-  d.value = `${subtitle}  ·  Generated ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`
+  d.value = `${subtitle}  Â·  Generated ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`
   d.font = { size: 9, italic: true, color: { argb: C.muted }, name: "Calibri" }
   d.fill = { type: "pattern", pattern: "solid", fgColor: { argb: C.headerBg } }
   d.alignment = { vertical: "middle", horizontal: "left" }
@@ -122,9 +122,9 @@ function usd2(v: number): Partial<ExcelJS.Cell> {
   return { numFmt: '"$"#,##0.00', value: v }
 }
 
-// ── Sheet 1: Executive Summary ───────────────────────────────────────────────
+// â”€â”€ Sheet 1: Executive Summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function buildExecutiveSummary(wb: ExcelJS.Workbook, kpis: any, clientName: string) {
-  const ws = wb.addWorksheet("Executive Summary", { tabColor: { argb: C.accentIndigo } })
+  const ws = wb.addWorksheet("Executive Summary")
   ws.columns = [
     { key: "label", width: 30 },
     { key: "value", width: 20 },
@@ -135,7 +135,7 @@ async function buildExecutiveSummary(wb: ExcelJS.Workbook, kpis: any, clientName
 
   applyTitleBlock(ws, "Executive Summary", "Key financial metrics snapshot", clientName)
 
-  // ── LEFT column: Revenue & Profit metrics ──
+  // â”€â”€ LEFT column: Revenue & Profit metrics â”€â”€
   const leftMetrics = [
     ["KEY METRICS", null],
     ["Monthly Recurring Revenue (MRR)", kpis.mrr],
@@ -151,7 +151,7 @@ async function buildExecutiveSummary(wb: ExcelJS.Workbook, kpis: any, clientName
     ["Expense Growth (MoM)",            kpis.expenseGrowthPct / 100],
   ]
 
-  // ── RIGHT column: Cash & Operations ──
+  // â”€â”€ RIGHT column: Cash & Operations â”€â”€
   const rightMetrics = [
     ["CASH & RUNWAY", null],
     ["Cash on Hand",                    kpis.cashOnHand],
@@ -230,7 +230,7 @@ async function buildExecutiveSummary(wb: ExcelJS.Workbook, kpis: any, clientName
   ws.views = [{ state: "frozen", xSplit: 0, ySplit: 5 }]
 }
 
-// ── Sheet 2 & 3: Income / Expense Tracking ───────────────────────────────────
+// â”€â”€ Sheet 2 & 3: Income / Expense Tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function buildTrackingSheet(
   wb: ExcelJS.Workbook,
   name: string,
@@ -240,7 +240,7 @@ async function buildTrackingSheet(
   clientName: string,
   field: "income" | "expenses"
 ) {
-  const ws = wb.addWorksheet(name, { tabColor: { argb: tabColor } })
+  const ws = wb.addWorksheet(name)
   const isIncome = field === "income"
   const headerLabel = isIncome ? "Total Revenue" : "Total Expenses"
   const accentColor = isIncome ? C.accentIndigo : "FFEF4444"
@@ -302,7 +302,7 @@ async function buildTrackingSheet(
   ws.views = [{ state: "frozen", xSplit: 0, ySplit: 5 }]
   ws.autoFilter = { from: "A5", to: "E5" }
 
-  // ── Category breakdown ───────────────────────────────────────────────────
+  // â”€â”€ Category breakdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const catStartRow = 6 + rowIdx + 3
   const catHdr = ws.getRow(catStartRow)
   catHdr.values = ["CATEGORY BREAKDOWN", "", "", "", ""]
@@ -332,9 +332,9 @@ async function buildTrackingSheet(
     })
 }
 
-// ── Sheet 4: Financial Metrics ───────────────────────────────────────────────
+// â”€â”€ Sheet 4: Financial Metrics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function buildMetricsSheet(wb: ExcelJS.Workbook, plSeries: any[], kpis: any, clientName: string) {
-  const ws = wb.addWorksheet("Financial Metrics", { tabColor: { argb: C.accentGold } })
+  const ws = wb.addWorksheet("Financial Metrics")
 
   ws.columns = [
     { key: "month",   width: 16 },
@@ -402,9 +402,9 @@ async function buildMetricsSheet(wb: ExcelJS.Workbook, plSeries: any[], kpis: an
   ws.autoFilter = { from: "A5", to: "G5" }
 }
 
-// ── Sheet 5: Raw Transactions ────────────────────────────────────────────────
+// â”€â”€ Sheet 5: Raw Transactions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function buildTransactionsSheet(wb: ExcelJS.Workbook, transactions: any[], clientName: string) {
-  const ws = wb.addWorksheet("Raw Transactions", { tabColor: { argb: "FF22D3A5" } })
+  const ws = wb.addWorksheet("Raw Transactions")
 
   ws.columns = [
     { key: "date",   width: 18 },
@@ -482,7 +482,7 @@ async function buildTransactionsSheet(wb: ExcelJS.Workbook, transactions: any[],
   ws.autoFilter = { from: "A5", to: "E5" }
 }
 
-// ── Route handler ────────────────────────────────────────────────────────────
+// â”€â”€ Route handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)

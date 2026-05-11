@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       amount: Math.abs(tx.amount),
     }))
 
-    const result = await db.transaction.createMany({ data, skipDuplicates: false })
+    const result = await db.transaction.createMany({ data })
     return Response.json({ imported: result.count })
   } catch (e) {
     console.error(e)
