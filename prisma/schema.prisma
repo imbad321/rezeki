@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  industry    String?
+  stage       String?
+  color       String   @default("#6366f1")
+  createdAt   DateTime @default(now())
+
+  snapshots     CompanySnapshot[]
+  mrrDataPoints MrrDataPoint[]
+  transactions  Transaction[]
+  investors     Investor[]
+  fundingRounds FundingRound[]
+  departments   Department[]
+  documents     Document[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  date        DateTime
+  description String
+  category    String
+  type        String
+  amount      Float
+
+  @@index([clientId])
+  @@index([date])
+  @@index([type])
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  name        String
+  category    String
+  mimeType    String
+  sizeBytes   Int
+  url         String
+  fileKey     String   @unique
+  uploadedAt  DateTime @default(now())
+  description String?
+
+  @@index([category])
+  @@index([uploadedAt])
+  @@index([clientId])
+}
+
+model MrrDataPoint {
+  id       String   @id @default(cuid())
+  clientId String
+  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month    DateTime
+  mrr      Float
+  newMrr   Float    @default(0)
+  expansion Float   @default(0)
+  churn    Float    @default(0)
+
+  @@unique([clientId, month])
+  @@index([clientId])
+  @@index([month])
+}
+
+model CompanySnapshot {
+  id           String   @id @default(cuid())
+  clientId     String
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  snapshotDate DateTime @default(now())
+  cashOnHand   Float
+  burnRate     Float
+  headcount    Int
+  arr          Float
+
+  @@unique([clientId, snapshotDate])
+  @@index([clientId])
+}
+
+model Investor {
+  id              String          @id @default(cuid())
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name            String
+  firm            String?
+  type            String
+  email           String?
+  logoUrl         String?
+  website         String?
+  leadRound       String?
+  capTableEntries CapTableEntry[]
+
+  @@index([clientId])
+}
+
+model FundingRound {
+  id              String          @id @default(cuid())
+  clientId        String
+  client          Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  roundType       String
+  closedAt        DateTime
+  amountRaised    Float
+  preMoneyVal     Float
+  postMoneyVal    Float
+  leadInvestor    String?
+  capTableEntries CapTableEntry[]
+
+  @@index([clientId])
+}
+
+model CapTableEntry {
+  id             String       @id @default(cuid())
+  investor       Investor     @relation(fields: [investorId], references: [id], onDelete: Cascade)
+  investorId     String
+  round          FundingRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  roundId        String
+  sharesOwned    Float
+  ownershipPct   Float
+  sharePrice     Float
+  investedAmount Float
+
+  @@unique([investorId, roundId])
+  @@index([investorId])
+  @@index([roundId])
+}
+
+model Department {
+  id       String        @id @default(cuid())
+  clientId String
+  client   Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name     String
+  color    String
+  budgets  BudgetEntry[]
+
+  @@unique([clientId, name])
+  @@index([clientId])
+}
+
+model BudgetEntry {
+  id           String     @id @default(cuid())
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId String
+  month        DateTime
+  budgeted     Float
+  actual       Float
+
+  @@unique([departmentId, month])
+  @@index([departmentId])
+  @@index([month])
+}

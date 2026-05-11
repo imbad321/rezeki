@@ -1,0 +1,128 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useState } from "react"
+import { NAV_ITEMS } from "@/lib/constants"
+import { cn } from "@/lib/utils"
+import { useClient, type ClientOption } from "@/lib/client-context"
+import { ChevronDown, Check, Sparkles } from "lucide-react"
+
+function ClientBadge({ color, name }: { color: string; name: string }) {
+  const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+  return (
+    <span
+      className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+      style={{ background: `linear-gradient(135deg, ${color}, ${color}99)` }}
+    >
+      {initials}
+    </span>
+  )
+}
+
+function ClientSelector() {
+  const { clients, selected, setSelected } = useClient()
+  const [open, setOpen] = useState(false)
+
+  if (!selected) return null
+
+  return (
+    <div className="relative px-3 py-3 border-b border-[var(--sidebar-border)]">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/5 transition-colors group"
+      >
+        <ClientBadge color={selected.color} name={selected.name} />
+        <div className="flex-1 min-w-0 text-left">
+          <div className="text-sm font-semibold text-white truncate leading-tight">{selected.name}</div>
+          <div className="text-[10px] text-[var(--sidebar-foreground)] truncate mt-0.5">
+            {selected.stage} · {selected.industry}
+          </div>
+        </div>
+        <ChevronDown
+          size={14}
+          className={cn("text-slate-500 shrink-0 transition-transform duration-200", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-3 right-3 top-full mt-1 z-50 rounded-xl border border-[var(--border-strong)] bg-[#111827] shadow-2xl overflow-hidden animate-fade-up">
+          {clients.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => { setSelected(c); setOpen(false) }}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-white/5 transition-colors"
+            >
+              <ClientBadge color={c.color} name={c.name} />
+              <div className="flex-1 min-w-0 text-left">
+                <div className="text-sm font-medium text-white truncate">{c.name}</div>
+                <div className="text-[10px] text-slate-500 truncate">{c.stage}</div>
+              </div>
+              {selected.id === c.id && <Check size={13} className="text-[var(--primary)] shrink-0" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function Sidebar() {
+  const pathname = usePathname()
+
+  return (
+    <aside className="flex flex-col w-64 min-h-screen shrink-0 border-r border-[var(--sidebar-border)]"
+      style={{ background: "var(--sidebar)" }}>
+
+      {/* Logo */}
+      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-[var(--sidebar-border)]">
+        <div className="w-7 h-7 rounded-lg bg-[var(--primary)] flex items-center justify-center shrink-0">
+          <Sparkles size={14} className="text-white" />
+        </div>
+        <span className="text-base font-bold tracking-tight text-white">Meridian</span>
+        <span className="ml-auto text-[9px] font-semibold uppercase tracking-widest text-[var(--primary)] bg-[var(--accent)] px-1.5 py-0.5 rounded-md">
+          AI
+        </span>
+      </div>
+
+      {/* Client selector */}
+      <ClientSelector />
+
+      {/* Nav */}
+      <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <div className="px-2 mb-3 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-600">
+          Navigation
+        </div>
+        {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+          const active = pathname === href || pathname.startsWith(href + "/")
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
+                active
+                  ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-fg)]"
+                  : "text-[var(--sidebar-foreground)] hover:text-slate-200 hover:bg-white/5"
+              )}
+            >
+              <Icon size={15} className={cn("shrink-0", active && "text-[var(--primary)]")} />
+              {label}
+              {active && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse-dot" />
+              )}
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="px-4 py-4 border-t border-[var(--sidebar-border)]">
+        <div className="text-[10px] text-slate-600 leading-relaxed">
+          Meridian CFO Platform<br />
+          <span className="text-slate-700">v2.0 · Multi-client</span>
+        </div>
+      </div>
+    </aside>
+  )
+}
