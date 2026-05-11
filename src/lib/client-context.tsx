@@ -34,7 +34,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
       .then((r) => r.json())
       .then((data: ClientOption[]) => {
         setClients(data)
-        const stored = typeof window !== "undefined" ? localStorage.getItem("meridian_client_id") : null
+        const stored = typeof window !== "undefined" ? localStorage.getItem("rezeki_client_id") : null
         const initial = stored ? data.find((c) => c.id === stored) ?? data[0] : data[0]
         setSelectedState(initial ?? null)
         setIsLoading(false)
@@ -44,7 +44,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
   function setSelected(client: ClientOption) {
     setSelectedState(client)
-    localStorage.setItem("meridian_client_id", client.id)
+    localStorage.setItem("rezeki_client_id", client.id)
   }
 
   return (

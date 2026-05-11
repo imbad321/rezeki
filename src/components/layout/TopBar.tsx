@@ -17,7 +17,7 @@ export function TopBar() {
   const title =
     Object.entries(PAGE_TITLES).find(([href]) =>
       pathname === href || pathname.startsWith(href + "/")
-    )?.[1] ?? "Meridian"
+    )?.[1] ?? "Rezeki Holdings Group"
 
   const showExport = pathname === "/dashboard" || pathname === "/transactions"
 

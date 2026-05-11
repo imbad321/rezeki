@@ -5,7 +5,7 @@ import { db } from "@/lib/prisma"
 const C = {
   headerBg:     "FF0D1117",
   headerFg:     "FFF0F4FF",
-  accentIndigo: "FF6366F1",
+  accentIndigo: "FF10B981",
   accentGold:   "FFD4AF37",
   positive:     "FF0D7A55",
   positiveBg:   "FFE6F7F1",
@@ -79,7 +79,7 @@ function applyTitleBlock(ws: ExcelJS.Worksheet, title: string, subtitle: string,
   // Row 1: main title
   ws.mergeCells("A1:F1")
   const t = ws.getCell("A1")
-  t.value = "MERIDIAN CFO PLATFORM"
+  t.value = "REZEKI HOLDINGS GROUP"
   t.font = { bold: true, size: 16, color: { argb: C.accentIndigo }, name: "Calibri" }
   t.fill = { type: "pattern", pattern: "solid", fgColor: { argb: C.headerBg } }
   t.alignment = { vertical: "middle", horizontal: "left" }
@@ -543,7 +543,7 @@ export async function GET(req: Request) {
 
     // Build workbook
     const wb = new ExcelJS.Workbook()
-    wb.creator  = "Meridian CFO Platform"
+    wb.creator  = "Rezeki Holdings Group"
     wb.company  = client.name
     wb.created  = new Date()
     wb.modified = new Date()
@@ -561,7 +561,7 @@ export async function GET(req: Request) {
     return new Response(buffer, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": `attachment; filename="Meridian_${slug}_${date}.xlsx"`,
+        "Content-Disposition": `attachment; filename="Rezeki_${slug}_${date}.xlsx"`,
         "Cache-Control": "no-store",
       },
     })

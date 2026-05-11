@@ -60,8 +60,8 @@ export function MrrTrendChart({ data }: { data: MrrDataPoint[] }) {
         <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#6366f1" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+              <stop offset="0%"   stopColor="#10b981" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="newMrrGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor="#22d3a5" stopOpacity={0.25} />
@@ -81,7 +81,7 @@ export function MrrTrendChart({ data }: { data: MrrDataPoint[] }) {
             axisLine={false} tickLine={false} width={54}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Area type="monotone" dataKey="MRR"     stroke="#6366f1" strokeWidth={2.5} fill={`url(#${id})`}       dot={false} activeDot={{ r: 4, fill: "#6366f1", strokeWidth: 0 }} />
+          <Area type="monotone" dataKey="MRR"     stroke="#10b981" strokeWidth={2.5} fill={`url(#${id})`}       dot={false} activeDot={{ r: 4, fill: "#10b981", strokeWidth: 0 }} />
           <Area type="monotone" dataKey="New MRR" stroke="#22d3a5" strokeWidth={1.5} fill="url(#newMrrGrad)" dot={false} activeDot={{ r: 3, fill: "#22d3a5", strokeWidth: 0 }} />
         </AreaChart>
       </ResponsiveContainer>

@@ -8,8 +8,8 @@ import { ClientProvider } from "@/lib/client-context"
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export const metadata: Metadata = {
-  title: "Meridian — CFO Platform",
-  description: "Financial command center for venture-backed startups",
+  title: "Rezeki Holdings Group",
+  description: "Portfolio finance command center — Rezeki Holdings Group",
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

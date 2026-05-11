@@ -48,11 +48,11 @@
   --input:             rgba(255,255,255,0.06);
   --ring:              rgba(99,102,241,0.5);
 
-  /* Accents */
-  --primary:           #6366f1;
+  /* Accents — Rezeki brand emerald */
+  --primary:           #10b981;
   --primary-foreground:#ffffff;
-  --accent:            rgba(99,102,241,0.12);
-  --accent-foreground: #a5b4fc;
+  --accent:            rgba(16,185,129,0.12);
+  --accent-foreground: #6ee7b7;
 
   /* Gold */
   --gold:              #d4af37;
@@ -73,8 +73,8 @@
   --sidebar:           #070a11;
   --sidebar-border:    rgba(255,255,255,0.05);
   --sidebar-foreground:#94a3b8;
-  --sidebar-active-bg: rgba(99,102,241,0.15);
-  --sidebar-active-fg: #a5b4fc;
+  --sidebar-active-bg: rgba(16,185,129,0.13);
+  --sidebar-active-fg: #6ee7b7;
 }
 
 @layer base {
@@ -118,14 +118,14 @@
 }
 
 /* ── Glow effects ────────────────────────────────────────────────────────── */
-.glow-indigo { box-shadow: 0 0 24px rgba(99,102,241,0.18), 0 0 1px rgba(99,102,241,0.4); }
+.glow-indigo { box-shadow: 0 0 24px rgba(16,185,129,0.18), 0 0 1px rgba(16,185,129,0.4); }
 .glow-green  { box-shadow: 0 0 24px rgba(34,211,165,0.14), 0 0 1px rgba(34,211,165,0.3); }
 .glow-gold   { box-shadow: 0 0 24px rgba(212,175,55,0.14), 0 0 1px rgba(212,175,55,0.3); }
 .glow-red    { box-shadow: 0 0 24px rgba(255,92,106,0.14),  0 0 1px rgba(255,92,106,0.3); }
 
 /* ── Gradient text ───────────────────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #f0f4ff 0%, #a5b4fc 100%);
+  background: linear-gradient(135deg, #f0fdf9 0%, #6ee7b7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

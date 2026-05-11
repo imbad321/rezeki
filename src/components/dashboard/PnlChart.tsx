@@ -65,8 +65,8 @@ export function PnlChart({ data }: { data: PlPoint[] }) {
         <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="#6366f1" stopOpacity={0.8} />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
+              <stop offset="0%"   stopColor="#10b981" stopOpacity={0.8} />
+              <stop offset="100%" stopColor="#10b981" stopOpacity={0.3} />
             </linearGradient>
             <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor="#ff5c6a" stopOpacity={0.7} />

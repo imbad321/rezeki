@@ -25,7 +25,7 @@ export const DOCUMENT_CATEGORIES = [
 export type DocumentCategory = "ALL" | "FINANCIAL_MODEL" | "BOARD_DECK" | "INVESTOR_UPDATE" | "OTHER"
 
 export const DEPT_COLORS: Record<string, string> = {
-  ENGINEERING:      "#6366f1",
+  ENGINEERING:      "#10b981",
   SALES:            "#22d3ee",
   MARKETING:        "#a78bfa",
   G_AND_A:          "#f59e0b",

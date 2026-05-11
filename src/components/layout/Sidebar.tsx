@@ -6,7 +6,7 @@ import { useState } from "react"
 import { NAV_ITEMS } from "@/lib/constants"
 import { cn } from "@/lib/utils"
 import { useClient, type ClientOption } from "@/lib/client-context"
-import { ChevronDown, Check, Sparkles } from "lucide-react"
+import { ChevronDown, Check, Landmark } from "lucide-react"
 
 function ClientBadge({ color, name }: { color: string; name: string }) {
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
@@ -74,24 +74,29 @@ export function Sidebar() {
     <aside className="flex flex-col w-64 min-h-screen shrink-0 border-r border-[var(--sidebar-border)]"
       style={{ background: "var(--sidebar)" }}>
 
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-[var(--sidebar-border)]">
-        <div className="w-7 h-7 rounded-lg bg-[var(--primary)] flex items-center justify-center shrink-0">
-          <Sparkles size={14} className="text-white" />
+      {/* Logo / Brand */}
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-[var(--sidebar-border)]">
+        <div className="w-8 h-8 rounded-xl bg-[var(--primary)] flex items-center justify-center shrink-0 glow-green">
+          <Landmark size={15} className="text-white" />
         </div>
-        <span className="text-base font-bold tracking-tight text-white">Meridian</span>
-        <span className="ml-auto text-[9px] font-semibold uppercase tracking-widest text-[var(--primary)] bg-[var(--accent)] px-1.5 py-0.5 rounded-md">
-          AI
-        </span>
+        <div className="min-w-0">
+          <div className="text-[13px] font-bold tracking-tight text-white leading-tight">Rezeki Holdings</div>
+          <div className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[var(--primary)] opacity-80 leading-tight mt-0.5">
+            Group
+          </div>
+        </div>
       </div>
 
-      {/* Client selector */}
+      {/* Portfolio company selector */}
+      <div className="px-4 pt-3 pb-1">
+        <div className="text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-600">Portfolio</div>
+      </div>
       <ClientSelector />
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
         <div className="px-2 mb-3 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-600">
-          Navigation
+          Finance
         </div>
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/")
@@ -119,8 +124,8 @@ export function Sidebar() {
       {/* Footer */}
       <div className="px-4 py-4 border-t border-[var(--sidebar-border)]">
         <div className="text-[10px] text-slate-600 leading-relaxed">
-          Meridian CFO Platform<br />
-          <span className="text-slate-700">v2.0 · Multi-client</span>
+          Rezeki Holdings Group<br />
+          <span className="text-slate-700">Portfolio Finance Platform</span>
         </div>
       </div>
     </aside>
