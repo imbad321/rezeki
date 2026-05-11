@@ -7,7 +7,6 @@ import { MrrTrendChart } from "@/components/dashboard/MrrTrendChart"
 import { BurnCashChart } from "@/components/dashboard/BurnCashChart"
 import { PnlChart } from "@/components/dashboard/PnlChart"
 import { CategoryDonut } from "@/components/dashboard/CategoryDonut"
-import { exportDashboardToExcel } from "@/lib/excel-export"
 import { formatCurrency, formatPercent } from "@/lib/utils"
 import {
   TrendingUp, DollarSign, Flame, Clock,
@@ -57,11 +56,15 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const handler = () => {
-      if (data && selected) exportDashboardToExcel(data, selected.name)
+      if (!selected) return
+      const a = document.createElement("a")
+      a.href = `/api/export?clientId=${selected.id}`
+      a.download = ""
+      a.click()
     }
     document.addEventListener("meridian:export", handler)
     return () => document.removeEventListener("meridian:export", handler)
-  }, [data, selected])
+  }, [selected])
 
   const runwayMo = data ? Math.floor(data.kpis.runway) : 0
 

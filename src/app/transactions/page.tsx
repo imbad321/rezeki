@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react"
 import { useClient } from "@/lib/client-context"
-import { exportTransactionsToExcel } from "@/lib/excel-export"
 import { formatCurrency } from "@/lib/utils"
 import { ArrowUpRight, ArrowDownRight, Search, Filter, TrendingUp, TrendingDown, DollarSign, BarChart2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -41,32 +40,29 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("All")
   const [search, setSearch] = useState("")
-  const [dashData, setDashData] = useState<any>(null)
 
   const load = useCallback(() => {
     if (!selected) return
     setLoading(true)
-    Promise.all([
-      fetch(`/api/transactions?clientId=${selected.id}`).then((r) => r.json()),
-      fetch(`/api/dashboard?clientId=${selected.id}`).then((r) => r.json()),
-    ]).then(([txs, dash]) => {
-      setTransactions(txs)
-      setDashData(dash)
-      setLoading(false)
-    }).catch(() => setLoading(false))
+    fetch(`/api/transactions?clientId=${selected.id}`)
+      .then((r) => r.json())
+      .then((txs) => { setTransactions(txs); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [selected])
 
   useEffect(() => { load() }, [load])
 
   useEffect(() => {
     const handler = () => {
-      if (dashData && transactions.length && selected) {
-        exportTransactionsToExcel({ ...dashData, transactions }, selected.name)
-      }
+      if (!selected) return
+      const a = document.createElement("a")
+      a.href = `/api/export?clientId=${selected.id}`
+      a.download = ""
+      a.click()
     }
     document.addEventListener("meridian:export", handler)
     return () => document.removeEventListener("meridian:export", handler)
-  }, [dashData, transactions, selected])
+  }, [selected])
 
   const filtered = useMemo(() => {
     return transactions.filter((tx) => {

@@ -54,6 +54,7 @@ export function TopBar() {
             onClick={() => {
               document.dispatchEvent(new CustomEvent("meridian:export"))
             }}
+            title="Download professional Excel workbook"
           >
             <Download size={12} />
             Export Excel
